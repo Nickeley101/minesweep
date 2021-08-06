@@ -12,6 +12,6 @@ sweepMines.addEventListener("click", async () => {
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
     //function: simulateClick,
-    files: ['test.js'],
+    files: ['script.js'],
   });
 });
