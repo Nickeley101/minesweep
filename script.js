@@ -2,13 +2,6 @@
 
 function loop(leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, rightMouseUpEvent) {
   console.log("loop");
-  // let i = 4;
-  // let j = 4;
-
-  // element = document.getElementById(j + "_" + i);
-
-  // element.dispatchEvent(mouseDownEvent);
-  // element.dispatchEvent(mouseUpEvent);
 
   face = document.getElementById("face");
   height = 16;
@@ -39,9 +32,6 @@ function loop(leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, rightMo
               else if (y!= 0 && y <= width && x != 0 && x <= height && surr === 'square bombflagged') {
                 flags++;
               }
-              // if (i == 3 && j == 2) {
-              //   alert(flags);
-              // }
 
             }
           }
