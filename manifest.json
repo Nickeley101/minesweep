@@ -1,0 +1,15 @@
+{
+    "name": "Minesweeper Solver",
+    "description": "Solves minesweeperonline.com",
+    "version": "1.0",
+    "manifest_version": 3,
+
+    "action": {
+        "default_popup": "popup.html"
+    },
+
+    "permissions": [
+        "activeTab",
+        "storage"
+    ]
+  }
