@@ -53,14 +53,6 @@ function simulateClick() {
 
   logging();
 
-  // let i = 4;
-  // let j = 4;
-
-  // element = document.getElementById(j + "_" + i);
-
-  // element.dispatchEvent(mouseDownEvent);
-  // element.dispatchEvent(mouseUpEvent);
-
   // face = document.getElementById("face");
   // height = 9;
   // width = 9;
