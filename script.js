@@ -1,15 +1,14 @@
 function myLoop(leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, rightMouseUpEvent) {         //  create a loop function
   face = document.getElementById("face");
-  height = 16;
-  width = 16;
-  blanks = 0;
+  dims = getDiff();
+  console.log(dims);
   flags = 0;
   hopeless = 0; 
   setTimeout(function() {   //  call a 3s setTimeout when the loop is called
 
       cycle = true;
-      for (let i = 1; i <= height && cycle; i++) { //iterate through each square until a change is made to the board
-        for (let j = 1; j <= width && cycle; j++) {
+      for (let i = 1; i <= dims[0] && cycle; i++) { //iterate through each square until a change is made to the board
+        for (let j = 1; j <= dims[1] && cycle; j++) {
   
           squareID = document.getElementById(i + "_" + j);
 
@@ -22,10 +21,10 @@ function myLoop(leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, right
                 x = m + i;
                 y = n + j;
                 surr = document.getElementById(x + "_" + y).className;
-                if (y!= 0 && y <= width && x != 0 && x <= height && surr === 'square blank') {
+                if (y!= 0 && y <= dims[1] && x != 0 && x <= dims[0] && surr === 'square blank') {
                   blanks++;
                 }
-                else if (y!= 0 && y <= width && x != 0 && x <= height && surr === 'square bombflagged') {
+                else if (y!= 0 && y <= dims[1] && x != 0 && x <= dims[0] && surr === 'square bombflagged') {
                   flags++;
                 }
   
@@ -44,7 +43,7 @@ function myLoop(leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, right
                   y = n + j;
                   surr = document.getElementById(x + "_" + y);
                   if (surr.className === 'square blank') { 
-                    if (y!= 0 && y <= width && x != 0 && x <= height){ //don't change the out of bounds squares
+                    if (y!= 0 && y <= dims[1] && x != 0 && x <= dims[0]){ //don't change the out of bounds squares
 
                       surr.dispatchEvent(leftMouseDownEvent);
                       surr.dispatchEvent(leftMouseUpEvent);    
@@ -63,7 +62,7 @@ function myLoop(leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, right
                   y = n + j;
                   surr = document.getElementById(x + "_" + y);
                   if (surr.className === 'square blank') { 
-                    if (y!= 0 && y <= width && x != 0 && x <= height){//don't change the out of bounds squares
+                    if (y!= 0 && y <= dims[1] && x != 0 && x <= dims[0]){//don't change the out of bounds squares
                       surr.dispatchEvent(rightMouseDownEvent);
                       surr.dispatchEvent(rightMouseUpEvent);  
                     }
@@ -84,6 +83,24 @@ function myLoop(leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, right
           myLoop(leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, rightMouseUpEvent);             //  ..  again which will trigger another 
       }                       //  ..  setTimeout()
   }, 200, leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, rightMouseUpEvent);
+}
+
+function getDiff() {
+  if (document.getElementById("beginner").checked) {
+    return [9,9];
+  }
+  else if (document.getElementById("intermediate").checked) {
+    return [16,16];
+  }
+  else if (document.getElementById("expert").checked) {
+    return [16,30];
+  }
+  else {
+    let dim = [];
+    dim.push(document.getElementById("custom").parentElement.parentElement.parentElement.children[1].children[0].value);
+    dim.push(document.getElementById("custom").parentElement.parentElement.parentElement.children[2].children[0].value);
+    return dim;
+  }
 }
 
 function simulateClick() {
