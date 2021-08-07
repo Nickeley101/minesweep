@@ -78,7 +78,7 @@ function myLoop(myMouseEvent) {         //  create a loop function
         }
 
         if (hopeless) {
-            console.log("stuck");
+            tank(myMouseEvent, delay, dims);
         }
 
         face = document.getElementById("face");
@@ -91,30 +91,88 @@ function myLoop(myMouseEvent) {         //  create a loop function
 }
 
 function tank(myMouseEvent, delay, dims) {
-
+    let borderSquares = [];
     let edgeSquares = [];
+    let flagTot = [];
+    let hopeless = true;
 
+    for (let i = 1; i <= dims[0]; i++) { //iterate through each square and make matrices
+        for (let j = 1; j <= dims[1]; j++) {
 
-    setTimeout(function () {   //  call a 200ms setTimeout when the loop is called
+            let squareID = document.getElementById(i + "_" + j);
 
-        for (let i = 1; i <= dims[0]; i++) { //iterate through each square and make matrices
-            for (let j = 1; j <= dims[1]; j++) {
+            if (squareID.className.startsWith('square open') && squareID.className !== 'square open0') { //if the square is on the edge, make matrix
+                let blanks = 0;
+                let flags = 0; //reset the flags count for each square
+                let squareID = document.getElementById(i + "_" + j);
 
-                if (squareID.className.startsWith('square open') && squareID.className !== 'square open0') {
-                    
+                for (let m = -1; m <= 1; m++) { //count how many blank/flags are around the square
+                    for (let n = -1; n <= 1; n++) {
+
+                        let x = m + i;
+                        let y = n + j;
+                        let surr = document.getElementById(x + "_" + y).className;
+                        if (y != 0 && y <= dims[1] && x != 0 && x <= dims[0] && surr === 'square blank') {
+                            blanks++;
+                            if (edgeSquares.indexOf(x + "_" + y) === -1) { //store unique blank square coords around the border
+                                edgeSquares.push(x + "_" + y);
+                            }
+                        }
+                        else if (y != 0 && y <= dims[1] && x != 0 && x <= dims[0] && surr === 'square bombflagged') {
+                            flags++;
+                        }
+
+                    }
+                }
+                if (blanks + flags > squareID.className[squareID.className.length - 1]) {
+                    borderSquares.push(i + "_" + j); //save number square coords on the border
+                    flagTot.push(squareID.className[squareID.className.length - 1] - flags); //also save amount of flags left unknown around that number square
+                }
+
+            }
+        }
+    }
+    let bigMatrix = [];
+    for (let i = 0; i < borderSquares.length; i++) { //create 2d array that represents linear system filled with 0 initially
+        bigMatrix[i] = [];
+        for (let j = 0; j < edgeSquares.length; j++) {
+            bigMatrix[i][j] = 0;
+        }
+
+    }
+
+    for (let i = 1; i <= dims[0]; i++) { //make system of linear equations
+        for (let j = 1; j <= dims[1]; j++) {
+
+            let squareID = document.getElementById(i + "_" + j);
+
+            if (squareID.className.startsWith('square open') && squareID.className !== 'square open0') { //make new matrix row for each exposed
+                for (let m = -1; m <= 1; m++) { //now fill the bigMatrix with 1 in the row of the border square and the column of the edge square
+                    for (let n = -1; n <= 1; n++) {
+
+                        let x = m + i;
+                        let y = n + j;
+                        let surr = document.getElementById(x + "_" + y).className;
+                        if (y != 0 && y <= dims[1] && x != 0 && x <= dims[0] && surr === 'square blank') {
+                            let edgeInd = edgeSquares.indexOf(x + "_" + y);
+                            let borderInd = borderSquares.indexOf(i + "_" + j);
+                            bigMatrix[borderInd][edgeInd] = 1; //set 1 for blank squares that surround certain border square
+                        }
+
+                    }
                 }
             }
         }
+    }
 
-        if (face.className !== 'facewin' && hopeless) {           //  if the counter < 10, call the loop function
-            tank(myMouseEvent, delay, dims);             //  ..  again which will trigger another 
-        }                       //  ..  setTimeout()
+    console.log(bigMatrix);
+    console.log(flagTot);
 
-    }, delay, myMouseEvent, delay, dims);
+
 
 }
 
-function getDiff() {
+function getDiff() { //get dimensions based off radio box check in game settings.  the player is able to tick a different box than the game they are currently playing, but hopefully they don't do that lol
     if (document.getElementById("beginner").checked) {
         return [9, 9];
     }
