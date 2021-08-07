@@ -1,7 +1,6 @@
 function myLoop(leftMouseDownEvent, leftMouseUpEvent, rightMouseDownEvent, rightMouseUpEvent) {         //  create a loop function
   face = document.getElementById("face");
   dims = getDiff();
-  console.log(dims);
   flags = 0;
   hopeless = 0; 
   setTimeout(function() {   //  call a 3s setTimeout when the loop is called
@@ -105,8 +104,15 @@ function getDiff() {
 
 function simulateClick() {
   document.title = 'working';
-  startingTile = "4_5"
-  squareID = document.getElementById(startingTile);
+
+  //start in middle
+  dims = getDiff();
+  startingTile = (Math.floor(dims[0]/2)) + "_" + (Math.floor(dims[1]/2));
+
+  //start in top left corner
+  //startingTile = "1_1";
+
+  squareID = document.getElementById(startingTile); //change starting tile to your desired starting tile or comment/uncomment
 
   const leftMouseDownEvent = new MouseEvent('mousedown', {
     bubbles: true,
