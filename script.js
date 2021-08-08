@@ -82,17 +82,17 @@ function myLoop(myMouseEvent) {         //  create a loop function
             hopeless = tankRet[0];
         }
 
-        // if (hopeless) {
-        //     console.log("would've random clicked here, but it's commented out while I figure out how to use probability");
-        // }
-        if (hopeless) { //random click if still hopeless after tank
-            console.log("resorted to random ", tankRet);
+        if (hopeless) {
+            console.log(tankRet[2]);
+            console.log(tankRet[1]);
+            console.log("would've random clicked here, but it's commented out while I figure out how to use probability");
+            
+            let guessInd = probGuess(tankRet[1], tankRet[2]);
 
-            let randInd = Math.floor(Math.random() * tankRet[1].length);
-            let randSquare = document.getElementById(tankRet[1][randInd]);
-            console.log(randInd);
-            randSquare.dispatchEvent(myMouseEvent[0]);
-            randSquare.dispatchEvent(myMouseEvent[1]);
+            let guessClick = document.getElementById(guessInd);
+
+            guessClick.dispatchEvent(myMouseEvent[0]);
+            guessClick.dispatchEvent(myMouseEvent[1]);
 
             face = document.getElementById("face");
             if (face.className === "facedead") {
@@ -101,12 +101,11 @@ function myLoop(myMouseEvent) {         //  create a loop function
                 face.dispatchEvent(myMouseEvent[1]);
 
                 firstClick(myMouseEvent);
+            }
 
-                hopeless = false;
-            }
-            else {
-                hopeless = false;
-            }
+            hopeless = false;
+
+
         }
 
 
@@ -117,6 +116,29 @@ function myLoop(myMouseEvent) {         //  create a loop function
             myLoop(myMouseEvent);             //  ..  again which will trigger another 
         }                       //  ..  setTimeout()
     }, delay, myMouseEvent);
+}
+
+function probGuess(edgeSquares, probMat) {
+
+    let sums = [];
+
+    for (let i = 0; i < probMat.length; i++) {
+        let sum = 0;
+        for (let j = 0; j < probMat[i].length - 1; j++) {
+            sum += probMat[i][j];
+        }
+        sum = probMat[i][probMat[i].length - 1] / sum;
+        sums.push(sum);
+    }
+
+    let lowestProbRow = sums.indexOf(Math.min(...sums));
+
+    let firstOne = probMat[lowestProbRow].indexOf(1);
+
+    let randGuess = edgeSquares[probMat[lowestProbRow][firstOne]];
+
+    return randGuess;
+
 }
 
 function tank(myMouseEvent, dims) {
@@ -192,12 +214,12 @@ function tank(myMouseEvent, dims) {
             }
         }
     }
+    let probabilityMatrix = solve(bigMatrix, flagTot);
 
-    solve(bigMatrix, flagTot);
     let thingsToClick = analyzeRow(bigMatrix); //things to click has an array of cleared cells and an array of flagged cells
 
     if (thingsToClick[0].length + thingsToClick[1].length == 0) {
-        return [true, edgeSquares]; //sets hopeless as true and stops
+        return [true, edgeSquares, probabilityMatrix]; //sets hopeless as true and stops
     }
 
     for (let i = 0; i < thingsToClick[0].length; i++) { //get and click all cleared cells
@@ -213,7 +235,7 @@ function tank(myMouseEvent, dims) {
         flagClick.dispatchEvent(myMouseEvent[3]);
     }
 
-    return [false, []];
+    return [false, [], []];
 
 }
 //functions to figure out hard positions in tank algorithm
@@ -285,17 +307,6 @@ function analyzeRow(M) {
                 }
             }
         }
-
-        for (let k = 0; k < flag.length; k++) { //delete this later, but make sure that your logic isnt doo doo and you dont mark any cells as cleared and flagged
-            if (cleared.indexOf(flag[k]) != -1) {
-                console.log("ur stupid omg");
-            }
-        }
-        for (let k = 0; k < cleared.length; k++) { //delete this later, but make sure that your logic isnt doo doo and you dont mark any cells as cleared and flagged
-            if (flag.indexOf(cleared[k]) != -1) {
-                console.log("ur stupid omg");
-            }
-        }
     }
     return [cleared, flag];
 }
@@ -326,7 +337,9 @@ function makeM(A, b) {
 
 function solve(A, b) {
     makeM(A, b);
+    let probMat = JSON.parse(JSON.stringify(A));
     diagonalize(A);
+    return probMat;
 }
 
 function getDiff() { //get dimensions based off radio box check in game settings.  the player is able to tick a different box than the game they are currently playing, but hopefully they don't do that lol
