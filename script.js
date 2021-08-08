@@ -82,6 +82,9 @@ function myLoop(myMouseEvent) {         //  create a loop function
             hopeless = tankRet[0];
         }
 
+        // if (hopeless) {
+        //     console.log("would've random clicked here, but it's commented out while I figure out how to use probability");
+        // }
         if (hopeless) { //random click if still hopeless after tank
             console.log("resorted to random ", tankRet);
 
