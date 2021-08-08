@@ -2,7 +2,7 @@ function myLoop(myMouseEvent) {         //  create a loop function
     let face = document.getElementById("face");
     let dims = getDiff();
     let hopeless = false;
-    let delay = 300;
+    let delay = 150;
     setTimeout(function () {   //  call a 200ms setTimeout when the loop is called
 
         let cycle = true;
@@ -78,7 +78,7 @@ function myLoop(myMouseEvent) {         //  create a loop function
         }
 
         if (hopeless) {
-            hopeless = tank(myMouseEvent, delay, dims);
+            hopeless = tank(myMouseEvent, dims);
         }
 
         face = document.getElementById("face");
@@ -90,11 +90,10 @@ function myLoop(myMouseEvent) {         //  create a loop function
     }, delay, myMouseEvent);
 }
 
-function tank(myMouseEvent, delay, dims) {
+function tank(myMouseEvent, dims) {
     let borderSquares = [];
     let edgeSquares = [];
     let flagTot = [];
-    let hopeless = true;
 
     for (let i = 1; i <= dims[0]; i++) { //iterate through each square and make matrices
         for (let j = 1; j <= dims[1]; j++) {
