@@ -76,10 +76,36 @@ function myLoop(myMouseEvent) {         //  create a loop function
                 }
             }
         }
-
+        let tankRet = [];
         if (hopeless) {
-            hopeless = tank(myMouseEvent, dims);
+            tankRet = tank(myMouseEvent, dims);
+            hopeless = tankRet[0];
         }
+
+        if (hopeless) { //random click if still hopeless after tank
+            console.log("resorted to random ", tankRet);
+
+            let randInd = Math.floor(Math.random() * tankRet[1].length);
+            let randSquare = document.getElementById(tankRet[1][randInd]);
+            console.log(randInd);
+            randSquare.dispatchEvent(myMouseEvent[0]);
+            randSquare.dispatchEvent(myMouseEvent[1]);
+
+            face = document.getElementById("face");
+            if (face.className === "facedead") {
+                console.log("you lost lol");
+                face.dispatchEvent(myMouseEvent[0]);
+                face.dispatchEvent(myMouseEvent[1]);
+
+                firstClick(myMouseEvent);
+
+                hopeless = false;
+            }
+            else {
+                hopeless = false;
+            }
+        }
+
 
         face = document.getElementById("face");
 
@@ -168,23 +194,23 @@ function tank(myMouseEvent, dims) {
     let thingsToClick = analyzeRow(bigMatrix); //things to click has an array of cleared cells and an array of flagged cells
 
     if (thingsToClick[0].length + thingsToClick[1].length == 0) {
-        return true; //sets hopeless as true and stops
+        return [true, edgeSquares]; //sets hopeless as true and stops
     }
 
-    for (let i = 0; i < thingsToClick[0].length; i++) { //go through and click all cleared cells
+    for (let i = 0; i < thingsToClick[0].length; i++) { //get and click all cleared cells
         let clearClick = document.getElementById(edgeSquares[thingsToClick[0][i]]);
-
         clearClick.dispatchEvent(myMouseEvent[0]);
         clearClick.dispatchEvent(myMouseEvent[1]);
     }
 
-    for (let i = 0; i < thingsToClick[1].length; i++) { //go through and click all flag cells
+
+    for (let i = 0; i < thingsToClick[1].length; i++) { //get and click all flag cells
         let flagClick = document.getElementById(edgeSquares[thingsToClick[1][i]]);
         flagClick.dispatchEvent(myMouseEvent[2]);
         flagClick.dispatchEvent(myMouseEvent[3]);
     }
 
-    return false;
+    return [false, []];
 
 }
 //functions to figure out hard positions in tank algorithm
@@ -196,7 +222,7 @@ function diagonalize(M) {
         // Find the col-th pivot
         i_max = findPivot(M, col, nRow);//i_max is the row index with the pivot for the column
         if (M[i_max][col] < 0) { //if the pivot is -1, make it positive
-            for(let j = 0; j < n; j++) {
+            for (let j = 0; j < n; j++) {
                 M[i_max][j] = -M[i_max][j];
             }
         }
@@ -256,7 +282,7 @@ function analyzeRow(M) {
                 }
             }
         }
-        
+
         for (let k = 0; k < flag.length; k++) { //delete this later, but make sure that your logic isnt doo doo and you dont mark any cells as cleared and flagged
             if (cleared.indexOf(flag[k]) != -1) {
                 console.log("ur stupid omg");
@@ -318,17 +344,23 @@ function getDiff() { //get dimensions based off radio box check in game settings
     }
 }
 
-function simulateClick() {
-    document.title = 'working';
-
+function firstClick(myMouseEvent) {
     //start in middle
-    dims = getDiff();
-    startingTile = (Math.floor(dims[0] / 2)) + "_" + (Math.floor(dims[1] / 2));
+    // dims = getDiff();
+    // startingTile = (Math.floor(dims[0] / 2)) + "_" + (Math.floor(dims[1] / 2));
 
     //start in top left corner
-    //startingTile = "1_1";
+    startingTile = "1_1";
 
     squareID = document.getElementById(startingTile); //change starting tile to your desired starting tile or comment/uncomment
+
+    squareID.dispatchEvent(myMouseEvent[0]);
+    squareID.dispatchEvent(myMouseEvent[1]);
+
+}
+
+function simulateClick() {
+    document.title = 'working';
 
     let myMouseEvent = [];
 
@@ -354,8 +386,7 @@ function simulateClick() {
         cancelable: true
     });
 
-    squareID.dispatchEvent(myMouseEvent[0]);
-    squareID.dispatchEvent(myMouseEvent[1]);
+    firstClick(myMouseEvent);
 
     myLoop(myMouseEvent);
 }
